@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/Style/style.css">
+    <title>FernanTravels</title>
+</head>
+<body>
+    <?php 
+    require_once 'includes/header.php';
+    ?>
+    <div>
+        <h2>Quem somos</h2>
+        <p>???????????????</p>
+
+        <h2>Historia</h2>
+        <p>????????????????</p>
+
+        <h2>Fundadores</h2>
+        <p>????????????????</p>
+
+        <h2>O que oferecemos</h2>
+        <p>???????????????</p>
+    </div>
+    <?php 
+    require_once 'includes/footer.php';
+    ?>
+</body>
+</html>
