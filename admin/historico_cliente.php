@@ -8,7 +8,8 @@
 </head>
 <body>
     <?php 
-    require_once './includes/functions.php';
+    require_once '../includes/functions.php';
+    require_once '../login/verifica_user.php';
     include '../includes/header.php';
     ?>
     <h4>Ver o historico de cotações de um cliente especifico</h4>
@@ -16,6 +17,8 @@
         <form action="" method="post">
             <label for="id">Escreva o ID do Cliente que você deseja ver as cotações:</label>
             <input type="number" name="id" id="id">
+
+            <input type="submit" value="Encontrar cotação">
         </form>
     </div>
     <?php 

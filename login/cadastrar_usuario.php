@@ -7,10 +7,16 @@
     <title>Cria conta</title>
 </head>
 <body>
-    <?php include '../includes/header.php'?>
+    <?php 
+    require_once '../includes/functions.php';
+    include '../includes/header.php'
+    ?>
     <div>
         <h1>Cadastro</h1>
         <form action="" method="post">
+            <label for="nome">Nome: </label>
+            <input type="nome" name="nome" id="nome" placeholder="Digite seu nome"><br>
+
             <label for="email">Email: </label>
             <input type="email" name="email" id="email" placeholder="Digite seu email"><br>
 
@@ -24,7 +30,7 @@
     Caso tenha uma conta entre em <b><a href="/login/login.php">Login</a></b>
     <?php 
     if ($_SERVER['REQUEST_METHOD'] == "POST"){
-            cadastrar_user($conexao, $_POST['email'], $_POST['senha']);
+            cadastrar_user($conexao, $_POST['nome'], $_POST['email'], $_POST['senha']);
         }
     include '../includes/footer.php'?>
 </body>

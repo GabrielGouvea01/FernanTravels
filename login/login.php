@@ -8,8 +8,8 @@
 </head>
 <body>
     <?php 
-    include './includes/header.php';
-    require_once './includes/functions.php';
+    include '../includes/header.php';
+    require_once '../includes/functions.php';
     ?>
     <div>
         <h3>Login</h3>
@@ -38,6 +38,6 @@
             echo "E-mail ou senha inválidos.";
         }
     }
-    include './includes/footer.php'?>
+    include '../includes/footer.php'?>
 </body>
 </html>

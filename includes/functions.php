@@ -1,5 +1,5 @@
 <?php 
-require_once './database/connect.php';
+require_once '../database/connect.php';
 session_start();
 
 // CLIENTE
@@ -163,11 +163,12 @@ function unico_usuario($conexao,$id) {
 
 // LOGIN
 
-function cadastrar_user($conexao, $email, $senha){
+function cadastrar_user($conexao, $nome, $email, $senha){
     
-    $sql = "INSERT INTO usuarios (email, senha) VALUES (:email, :senha)";
+    $sql = "INSERT INTO usuarios (nome, email, senha) VALUES (:nome, :email, :senha)";
 
     $stmt = $conexao->prepare($sql);
+    $stmt->bindParam(":nome", $nome);
     $stmt->bindParam(":email", $email); // bindValue - usa quando voce passa um valor direto
     $stmt->bindParam(":senha", password_hash($senha, PASSWORD_DEFAULT)); // gera o hash aqui
     $stmt->execute();

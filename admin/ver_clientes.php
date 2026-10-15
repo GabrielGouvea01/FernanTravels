@@ -9,7 +9,8 @@
 <body>
     <?php 
     include '../includes/header.php';
-    require_once './includes/functions.php';
+    require_once '../includes/functions.php';
+    require_once '../login/verifica_user.php';
     ?>
     <h1>Clientes</h1>
     <?php

@@ -9,7 +9,8 @@
 <body>
     <h1>Cotações</h1>
     <?php 
-    require_once './includes/functions.php';
+    require_once '../includes/functions.php';
+    require_once '../login/verifica_user.php';
     include '../includes/header.php';
     historico_geral($conexao);
     include '../includes/footer.php'

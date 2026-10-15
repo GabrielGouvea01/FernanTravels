@@ -8,10 +8,10 @@
 
     //adm ->//
 
-    <a href="http:../appADM/ver_cotacoes.php">Ver cotaçoes</a> /
-    <a href="http:../appADM/ver_clientes.php">Ver clientes</a> /
-    <a href="http:../appADM/cliente.php">Cliente</a> /
-    <a href="http:../appADM/historico_cliente.php">Historico Cliente</a> /
-    <a href="http:../appADM/deletar_cotacao.php">Deletar Cotação</a>
+    <a href="http:../admin/ver_cotacoes.php">Ver cotaçoes</a> /
+    <a href="http:../admin/ver_clientes.php">Ver clientes</a> /
+    <a href="http:../admin/cliente.php">Cliente</a> /
+    <a href="http:../admin/historico_cliente.php">Historico Cliente</a> /
+    <a href="http:../admin/deletar_cotacao.php">Deletar Cotação</a>
     <hr>
 </header>

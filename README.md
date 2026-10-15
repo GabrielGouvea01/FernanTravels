@@ -192,7 +192,7 @@ CREATE TABLE usuarios(
     id SERIAL PRIMARY KEY,
     nome VARCHAR(120) NOT NULL UNIQUE,
     email VARCHAR(150) NOT NULL UNIQUE,
-    senha VARCHAR(255) NOT NULL UNIQUE
+    senha VARCHAR(255) NOT NULL 
 );
 
 CREATE TABLE cotacao(
@@ -209,5 +209,8 @@ CREATE TABLE cotacao(
     qnt_bagagens INT NOT NULL, 
     hotel VARCHAR(50) NOT NULL, 
     carro VARCHAR(50) NOT NULL, 
-    id_cliente INT NOT NULL
+    id_cliente INT REFERENCES usuarios(id)
 );
+
+
+### SENHA ADMIN 12345

@@ -9,12 +9,15 @@
 <body>
     <?php 
     include '../includes/header.php';
-    require_once './includes/functions.php';
+    require_once '../includes/functions.php';
+    require_once '../login/verifica_user.php';
     ?>
     <div>
         <form action="" method="post">
-            <label for="id">Insira o ID da cotaçãio que deseja deletar:</label>
+            <label for="id">Insira o ID da cotação que deseja deletar:</label>
             <input type="number" name="id" id="id">
+
+            <input type="submit" value="Exluir cotação">
         </form>
     </div>
     <h4>Apagar cotações</h4>

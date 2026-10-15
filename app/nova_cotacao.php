@@ -8,8 +8,9 @@
 </head>
 <body>
     <?php 
-    include './includes/header.php';
-    require_once './includes/functions.php';
+    include '../includes/header.php';
+    require_once '../includes/functions.php';
+    require_once '../login/verifica_user.php';
     ?>
     <div>
         <h1>Cotação</h1>
@@ -68,7 +69,7 @@
     if ($_SERVER["REQUEST_METHOD"] == "POST"){
         nova_cotacao($conexao,  $_POST['nome'], $_POST['telefone'], $_POST['email'], $_POST['origem'], $_POST['destino'], $_POST['ida'], $_POST['volta'], $_POST['adultos'], $_POST['criancas'], $_POST['bagagens'], $_POST['escolhaH'], $_POST['escolhaC'], $_SESSION['id']);   
     }
-    include './includes/footer.php'
+    include '../includes/footer.php'
     ?>
 </body>
 </html>
