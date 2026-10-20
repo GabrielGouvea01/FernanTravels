@@ -1,248 +1,203 @@
-<?php 
-require_once '../database/connect.php';
-session_start();
+<?php
+require_once __DIR__ . '/../database/connect.php';
 
-// CLIENTE
-
-function nova_cotacao($conexao, $nome, $telefone, $email, $origem, $destino, $ida, $volta, $qnt_adultos, $qnt_criancas, $qnt_bagagens, $hotel, $carro, $id_cliente){
-    
-    $sql = "INSERT INTO cotacao  (nome, telefone, email, origem, destino, ida, volta, qnt_adultos, qnt_criancas, qnt_bagagens, hotel, carro, id_cliente) VALUES (:nome, :telefone, :email, :origem, :destino, :ida, :volta, :qnt_adultos, :qnt_criancas, :qnt_bagagens, :hotel, :carro, :id_cliente)";
-
-    $stmt = $conexao->prepare($sql);
-    $stmt->bindParam(":nome", $nome); // bindValue - usa quando voce passa um valor direto
-    $stmt->bindParam(":telefone", $telefone); // bindParams - usa quando voce passa um valor por uma variavel
-    $stmt->bindParam(":email", $email); 
-    $stmt->bindParam(":origem", $origem);
-    $stmt->bindParam(":destino", $destino); 
-    $stmt->bindParam(":ida", $ida);
-    $stmt->bindParam(":volta", $volta); 
-    $stmt->bindParam(":qnt_adultos", $qnt_adultos);
-    $stmt->bindParam(":qnt_criancas", $qnt_criancas); 
-    $stmt->bindParam(":qnt_bagagens", $qnt_bagagens);
-    $stmt->bindParam(":hotel", $hotel); 
-    $stmt->bindParam(":carro", $carro);
-    $stmt->bindParam(":id_cliente", $id_cliente);
-
-    $stmt->execute();
-    echo "Cotação feita com sucesso!";
-} //
-
-function atualizar_cotacao($conexao, $nome, $telefone, $email, $origem, $destino, $ida, $volta, $qnt_adultos, $qnt_criancas, $qnt_bagagens, $hotel, $carro, $id_cliente, $id){
-    $sql = "UPDATE  cotaco (nome, telefone, email, origem, destino, ida, volta, qnt_adultos, qnt_criancas, qnt_bagagens, hotel, carro, id_cliente) SET nome = :nome , telefone = :telefone, email = :email, origem = :origem, destino = :destino, ida = :ida, volta = :volta, qnt_adultos = :qnt_adultos, qnt_criancas = :qnt_criancas, qnt_bagagens = :qnt_bagagens, hotel = :hotel, carro = :carro, id_cliente = :id_cliente WHERE id = :id";
-
-    $stmt = $conexao->prepare($sql);
-    $stmt->bindParam(":id", $id);
-    $stmt->bindParam(":nome", $nome); // bindValue - usa quando voce passa um valor direto
-    $stmt->bindParam(":telefone", $telefone); // bindParams - usa quando voce passa um valor por uma variavel
-    $stmt->bindParam(":email", $email); 
-    $stmt->bindParam(":origem", $origem);
-    $stmt->bindParam(":destino", $destino); 
-    $stmt->bindParam(":ida", $ida);
-    $stmt->bindParam(":volta", $volta); 
-    $stmt->bindParam(":qnt_adultos", $qnt_adultos);
-    $stmt->bindParam(":qnt_criancas", $qnt_criancas); 
-    $stmt->bindParam(":qnt_bagagens", $qnt_bagagens);
-    $stmt->bindParam(":hotel", $hotel); 
-    $stmt->bindParam(":carro", $carro);
-    $stmt->bindParam(":id_cliente", $id_cliente);
-
-    $stmt->execute();
-    echo "Cotação atualizada com sucesso!";
-} //
-
-function consultar($conexao, $id){
-    // Coloca a instrução em sql
-    $sql = "SELECT nome FROM cotacao WHERE id = ";
-
-    $stmt = $conexao->prepare($sql);
-    $stmt->bindParam(":id", $id); // bindParam() usa quando tiver pegando valor de uma variavel
-    $stmt->execute();
-
-    $aluno = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    echo "Aluno: {$aluno['nome']}<br>Turma: {$aluno['turma']}<br>Nascimento: {$aluno['nasc']}<br>Ativo: {$aluno['ativo']}";
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
 
-function historico_unico($conexao, $id_cliente){
-    // Coloca a instrução em sql
-    $sql = "SELECT * FROM cotacao WHERE id_cliente = :id_cliente";
-
-    $stmt = $conexao->prepare($sql);
-    $stmt->bindParam(":id_cliente", $id_cliente);
-    $stmt->execute();
-
-    $cotacoes = $stmt->fetch(PDO::FETCH_ASSOC);
-
-     foreach($cotacoes as $cotacao){
-        echo "<hr>";
-        echo "Nome: {$cotacao['nome']}<br>";
-        echo "Telefone: {$cotacao['telefone']}<br>";
-        echo "Email: {$cotacao['email']}<br>";
-        echo "Origem: {$cotacao['origem']}<br>";
-        echo "Destino: {$cotacao['destino']}<br>";
-        echo "Ida: {$cotacao['ida']}<br>";
-        echo "Volta: {$cotacao['volta']}<br>";
-        echo "Quantidae de Adultos: {$cotacao['qnt_adultos']}<br>";
-        echo "Quantidade de Crianças: {$cotacao['qnt_criancas']}<br>";
-        echo "Quantidade de Bagagens: {$cotacao['qnt_bagagens']}<br>";
-        echo "Hotel: {$cotacao['hotel']}<br>";
-        echo "Carro: {$cotacao['Carro']}<br>";
-     }
-} //?
-
-// ADM
-
-function historico_geral($conexao){
-    // Coloca a intrução em sql
-    $sql = "SELECT * FROM cotacao";
-
-    // Prepara o codigo para evitar sql injection
-    $stmt = $conexao->prepare($sql);
-    // Executa a instrução
-    $stmt ->execute();
-
-    //Guarda a resposta da instrução em uma variavel(fetchAll - seleciona tudo), transforma em uma array
-    $cotacoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    // Percorre toda a lista que esta em alunos e mostra cada aluno por vez
-    foreach($cotacoes as $cotacao){
-        echo "<hr>";
-        echo "ID: {$cotacao['id']}<br>";
-        echo "Nome: {$cotacao['nome']}<br>";
-        echo "Telefone: {$cotacao['telefone']}<br>";
-        echo "Email: {$cotacao['email']}<br>";
-        echo "Origem: {$cotacao['origem']}<br>";
-        echo "Destino: {$cotacao['destino']}<br>";
-        echo "Ida: {$cotacao['ida']}<br>";
-        echo "Volta: {$cotacao['volta']}<br>";
-        echo "Quantidae de Adultos: {$cotacao['qnt_adultos']}<br>";
-        echo "Quantidade de Crianças: {$cotacao['qnt_criancas']}<br>";
-        echo "Quantidade de Bagagens: {$cotacao['qnt_bagagens']}<br>";
-        echo "Hotel: {$cotacao['hotel']}<br>";
-        echo "Carro: {$cotacao['Carro']}<br>";
-    }
-} //
-
-function deletar_cotacao($conexao, $id){
-        // Adiciona a instrução no sql
-        $sql = "DELETE FROM cotacao WHERE id = :id";
-
-        // Prepara o codigo em sql
-        $stmt = $conexao->prepare($sql);
-        //Coloca o valor que sera troca pelo :id
-        $stmt->bindParam(":id", $id); // bindParam() usa quando tiver pegando valor de uma variavel
-        $stmt->execute();
-
-        echo "Cotação $id deletada com sucesso";
-} //
-
-// Ver os dados de um cliente especifico baseado na sua conta e cotação
-function unico_usuario($conexao,$id) {
-    // 1. Busca os dados dos usuários
-    $sql = "SELECT id, nome, email FROM usuarios WHERE id = :id";
-    $stmt = $conexao->prepare($sql);
-    $stmt->bindParam(":id", $id);
-    $stmt->execute();
-
-    // fetchAll traz TODOS os usuários cadastrados
-    $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    // 2. Percorre cada usuário retornado
-    if($usuario) {
-        echo "<hr>";
-        echo "Nome: {$usuario['nome']} <br>";
-        echo "Email: {$usuario['email']}<br>";
-
-        // Chama a função auxiliar para contar as cotações deste usuário específico
-        $total_cotacoes = quantidade_cotacoes($conexao, $usuario['id']);
-        echo "Total de Cotações: " . $total_cotacoes . "<br>";
-    } else {
-        echo "<hr>Usuário não encontrado.";
-    }
-} //
-
-// LOGIN
-
-function cadastrar_user($conexao, $nome, $email, $senha){
-    
-    $sql = "INSERT INTO usuarios (nome, email, senha) VALUES (:nome, :email, :senha)";
-
-    $stmt = $conexao->prepare($sql);
-    $stmt->bindParam(":nome", $nome);
-    $stmt->bindParam(":email", $email); // bindValue - usa quando voce passa um valor direto
-    $stmt->bindParam(":senha", password_hash($senha, PASSWORD_DEFAULT)); // gera o hash aqui
-    $stmt->execute();
-    echo "Usuario cadastrado com sucesso!";
-}//
-
-function consulta_user($conexao, $email){
-    // Coloca a instrução em sql
-    $sql = "SELECT id,email,senha FROM usuarios WHERE email = :email";
-
-    $stmt = $conexao->prepare($sql);
-    $stmt->bindParam(":email", $email);
-    $stmt->execute();
-
-    $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    return $usuario;
+function escapar_html($valor)
+{
+    return htmlspecialchars((string) ($valor ?? ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
 
+function exibir_cotacoes($cotacoes, $exibir_id = false)
+{
+    $campos = [
+        'nome' => 'Nome',
+        'telefone' => 'Telefone',
+        'email' => 'Email',
+        'origem' => 'Origem',
+        'destino' => 'Destino',
+        'ida' => 'Ida',
+        'volta' => 'Volta',
+        'qnt_adultos' => 'Quantidade de adultos',
+        'qnt_criancas' => 'Quantidade de crianças',
+        'qnt_bagagens' => 'Quantidade de bagagens',
+        'hotel' => 'Hotel',
+        'carro' => 'Carro',
+    ];
 
-//// listar todos os clientes, baseados na sua conta, e listar quantas cotaçoes ja aforam feitas por eles
-function mostrar_usuarios($conexao) {
-    // 1. Busca os dados dos usuários
-    $sql = "SELECT id, nome, email FROM usuarios";
+    if (!$cotacoes) {
+        echo '<p>Nenhuma cotação encontrada.</p>';
+        return;
+    }
+
+    foreach ($cotacoes as $cotacao) {
+        echo '<article><hr>';
+        if ($exibir_id) {
+            echo '<strong>ID:</strong> ' . escapar_html($cotacao['id']) . '<br>';
+        }
+        foreach ($campos as $campo => $rotulo) {
+            echo '<strong>' . escapar_html($rotulo) . ':</strong> '
+                . escapar_html($cotacao[$campo] ?? '') . '<br>';
+        }
+        echo '</article>';
+    }
+}
+
+function nova_cotacao($conexao, $nome, $telefone, $email, $origem, $destino, $ida, $volta, $qnt_adultos, $qnt_criancas, $qnt_bagagens, $hotel, $carro, $id_cliente)
+{
+    $sql = 'INSERT INTO cotacao (nome, telefone, email, origem, destino, ida, volta, qnt_adultos, qnt_criancas, qnt_bagagens, hotel, carro, id_cliente)
+            VALUES (:nome, :telefone, :email, :origem, :destino, :ida, :volta, :qnt_adultos, :qnt_criancas, :qnt_bagagens, :hotel, :carro, :id_cliente)';
     $stmt = $conexao->prepare($sql);
-    $stmt->execute();
+    $stmt->execute([
+        ':nome' => $nome,
+        ':telefone' => $telefone,
+        ':email' => $email,
+        ':origem' => $origem,
+        ':destino' => $destino,
+        ':ida' => $ida,
+        ':volta' => $volta,
+        ':qnt_adultos' => $qnt_adultos,
+        ':qnt_criancas' => $qnt_criancas,
+        ':qnt_bagagens' => $qnt_bagagens,
+        ':hotel' => $hotel,
+        ':carro' => $carro,
+        ':id_cliente' => $id_cliente,
+    ]);
 
-    // fetchAll traz TODOS os usuários cadastrados
+    echo 'Cotação feita com sucesso!';
+}
+
+function atualizar_cotacao($conexao, $nome, $telefone, $email, $origem, $destino, $ida, $volta, $qnt_adultos, $qnt_criancas, $qnt_bagagens, $hotel, $carro, $id_cliente, $id)
+{
+    $sql = 'UPDATE cotacao SET nome = :nome, telefone = :telefone, email = :email, origem = :origem,
+            destino = :destino, ida = :ida, volta = :volta, qnt_adultos = :qnt_adultos,
+            qnt_criancas = :qnt_criancas, qnt_bagagens = :qnt_bagagens, hotel = :hotel,
+            carro = :carro WHERE id = :id AND id_cliente = :id_cliente';
+    $stmt = $conexao->prepare($sql);
+    $stmt->execute([
+        ':nome' => $nome,
+        ':telefone' => $telefone,
+        ':email' => $email,
+        ':origem' => $origem,
+        ':destino' => $destino,
+        ':ida' => $ida,
+        ':volta' => $volta,
+        ':qnt_adultos' => $qnt_adultos,
+        ':qnt_criancas' => $qnt_criancas,
+        ':qnt_bagagens' => $qnt_bagagens,
+        ':hotel' => $hotel,
+        ':carro' => $carro,
+        ':id' => $id,
+        ':id_cliente' => $id_cliente,
+    ]);
+
+    echo $stmt->rowCount() > 0
+        ? 'Cotação atualizada com sucesso!'
+        : 'Cotação não encontrada para este usuário.';
+}
+
+function consultar($conexao, $id)
+{
+    $stmt = $conexao->prepare('SELECT * FROM cotacao WHERE id = :id');
+    $stmt->execute([':id' => $id]);
+    $cotacao = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    exibir_cotacoes($cotacao ? [$cotacao] : [], true);
+}
+
+function historico_unico($conexao, $id_cliente)
+{
+    $stmt = $conexao->prepare('SELECT * FROM cotacao WHERE id_cliente = :id_cliente ORDER BY id DESC');
+    $stmt->execute([':id_cliente' => $id_cliente]);
+    exibir_cotacoes($stmt->fetchAll(PDO::FETCH_ASSOC), true);
+}
+
+function historico_geral($conexao)
+{
+    $stmt = $conexao->query('SELECT * FROM cotacao ORDER BY id DESC');
+    exibir_cotacoes($stmt->fetchAll(PDO::FETCH_ASSOC), true);
+}
+
+function deletar_cotacao($conexao, $id)
+{
+    $stmt = $conexao->prepare('DELETE FROM cotacao WHERE id = :id');
+    $stmt->execute([':id' => $id]);
+
+    echo $stmt->rowCount() > 0
+        ? 'Cotação ' . escapar_html($id) . ' deletada com sucesso.'
+        : 'Cotação não encontrada.';
+}
+
+function unico_usuario($conexao, $id)
+{
+    $stmt = $conexao->prepare('SELECT id, nome, email FROM usuarios WHERE id = :id');
+    $stmt->execute([':id' => $id]);
+    $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$usuario) {
+        echo '<hr>Usuário não encontrado.';
+        return;
+    }
+
+    echo '<hr><strong>Nome:</strong> ' . escapar_html($usuario['nome']) . '<br>';
+    echo '<strong>Email:</strong> ' . escapar_html($usuario['email']) . '<br>';
+    echo '<strong>Total de cotações:</strong> '
+        . escapar_html(quantidade_cotacoes($conexao, $usuario['id'])) . '<br>';
+}
+
+function cadastrar_user($conexao, $nome, $email, $senha)
+{
+    $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
+    $sql = 'INSERT INTO usuarios (nome, email, senha) VALUES (:nome, :email, :senha)';
+    $stmt = $conexao->prepare($sql);
+    $stmt->execute([
+        ':nome' => $nome,
+        ':email' => $email,
+        ':senha' => $senha_hash,
+    ]);
+}
+
+function consulta_user($conexao, $email)
+{
+    $stmt = $conexao->prepare('SELECT id, email, senha, perfil FROM usuarios WHERE email = :email');
+    $stmt->execute([':email' => $email]);
+
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+function mostrar_usuarios($conexao)
+{
+    $stmt = $conexao->query('SELECT id, nome, email FROM usuarios ORDER BY id');
     $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // 2. Percorre cada usuário retornado
-    foreach ($usuarios as $usuario) {
-        echo "<hr>";
-        echo "Nome: {$usuario['nome']} <br>";
-        echo "Email: {$usuario['email']}<br>";
-
-        // Chama a função auxiliar para contar as cotações deste usuário específico
-        $total_cotacoes = quantidade_cotacoes($conexao, $usuario['id']);
-        echo "Total de Cotações: " . $total_cotacoes . "<br>";
+    if (!$usuarios) {
+        echo '<p>Nenhum cliente encontrado.</p>';
+        return;
     }
-} //
 
-// Função auxiliar que conta quantas cotações um cliente específico possui
-function quantidade_cotacoes($conexao, $id_cliente) {
-    $sql = "SELECT COUNT(*) AS qnt_cotacao FROM cotacao WHERE id_cliente = :id_cliente";
-    $stmt = $conexao->prepare($sql);
-    $stmt->bindParam(":id_cliente", $id_cliente);
-    $stmt->execute();
-
-    // fetch traz apenas uma linha com o resultado da contagem
-    $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    // Retorna apenas o número contado
-    return $resultado['qnt_cotacao'];
-} //
-
-
-// - pegar id da conta do cliente no banco de dados
-// - atribuir esse id a uma sessao
-// - quando o cliente fazer uma cotaçao atribuir o id que esta na sessao a ela
-// - quando ele for ver a cotaçao usar um SELECT COM WHERE com base no id
-
-function atribuir_id($conexao, $email){
-    // Coloca a instrução em sql
-    $sql = "SELECT id FROM usuarios WHERE email = :email";
-
-    $stmt = $conexao->prepare($sql);
-    $stmt->bindParam(":email", $email); // bindParam() usa quando tiver pegando valor de uma variavel
-    $stmt->execute();
-
-    $id = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    return $id;
+    foreach ($usuarios as $usuario) {
+        echo '<hr><strong>ID:</strong> ' . escapar_html($usuario['id']) . '<br>';
+        echo '<strong>Nome:</strong> ' . escapar_html($usuario['nome']) . '<br>';
+        echo '<strong>Email:</strong> ' . escapar_html($usuario['email']) . '<br>';
+        echo '<strong>Total de cotações:</strong> '
+            . escapar_html(quantidade_cotacoes($conexao, $usuario['id'])) . '<br>';
+    }
 }
 
+function quantidade_cotacoes($conexao, $id_cliente)
+{
+    $stmt = $conexao->prepare('SELECT COUNT(*) FROM cotacao WHERE id_cliente = :id_cliente');
+    $stmt->execute([':id_cliente' => $id_cliente]);
 
-?>
+    return (int) $stmt->fetchColumn();
+}
+
+function atribuir_id($conexao, $email)
+{
+    $stmt = $conexao->prepare('SELECT id FROM usuarios WHERE email = :email');
+    $stmt->execute([':email' => $email]);
+
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}

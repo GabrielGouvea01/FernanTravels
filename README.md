@@ -214,3 +214,15 @@ CREATE TABLE cotacao(
 
 
 ### SENHA ADMIN 12345
+
+
+ALTER TABLE usuarios
+ADD COLUMN perfil VARCHAR(20) NOT NULL DEFAULT 'cliente';
+
+
+UPDATE usuarios
+SET perfil = 'admin'
+WHERE email = 'admin@admin.com';
+
+
+SELECT * FROM usuarios;

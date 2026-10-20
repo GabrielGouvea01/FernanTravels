@@ -8,26 +8,29 @@
 </head>
 <body>
     <?php 
-    include '../includes/header.php';
-    require_once '../includes/functions.php';
-    require_once '../login/verifica_user.php';
+    require_once __DIR__ . '/../login/verifica_user.php';
+    require_once __DIR__ . '/../includes/functions.php';
+    include __DIR__ . '/../includes/header.php';
     ?>
     <div>
         <form action="" method="post">
             <label for="id">Insira o ID da cotação que deseja deletar:</label>
-            <input type="number" name="id" id="id">
+            <input type="number" name="id" id="id" min="1" required>
 
             <input type="submit" value="Exluir cotação">
         </form>
     </div>
-    <h4>Apagar cotações</h4>
-    <h1>OK</h1>
     <?php 
-    if($_SERVER['REQUEST_METHOD'] == "POST"){
-        deletar_cotacao($conexao,$_POST["id"]);
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $id = filter_var($_POST['id'] ?? '', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        if ($id === false) {
+            echo '<p role="alert">Informe um ID de cotação válido.</p>';
+        } else {
+            deletar_cotacao($conexao, $id);
+        }
     }
 
-    include '../includes/footer.php'?>
+    include __DIR__ . '/../includes/footer.php'; ?>
     
 </body>
 </html>

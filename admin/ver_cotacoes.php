@@ -7,13 +7,15 @@
     <title>Mostrar Cotações</title>
 </head>
 <body>
-    <h1>Cotações</h1>
     <?php 
-    require_once '../includes/functions.php';
-    require_once '../login/verifica_user.php';
-    include '../includes/header.php';
+    require_once __DIR__ . '/../login/verifica_user.php';
+    require_once __DIR__ . '/../includes/functions.php';
+    include __DIR__ . '/../includes/header.php';
+    ?>
+    <h1>Cotações</h1>
+    <?php
     historico_geral($conexao);
-    include '../includes/footer.php'
+    include __DIR__ . '/../includes/footer.php';
      ?>
     
 </body>

@@ -8,12 +8,13 @@
 </head>
 <body>
     <?php 
-    require_once '../login/verifica_user.php';
-    require_once '../includes/functions.php';
-    include '../includes/header.php';
+    require_once __DIR__ . '/../login/verifica_user.php';
+    require_once __DIR__ . '/../includes/functions.php';
+    include __DIR__ . '/../includes/header.php';
     ?>
     <h1>Seu historico de viagens</h1>
     <?php 
     historico_unico($conexao, $_SESSION['id']);
-    include '../includes/footer.php'?>
+    include __DIR__ . '/../includes/footer.php'; ?>
+</body>
 </html>

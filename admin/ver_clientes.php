@@ -8,18 +8,16 @@
 </head>
 <body>
     <?php 
-    include '../includes/header.php';
-    require_once '../includes/functions.php';
-    require_once '../login/verifica_user.php';
+    require_once __DIR__ . '/../login/verifica_user.php';
+    require_once __DIR__ . '/../includes/functions.php';
+    include __DIR__ . '/../includes/header.php';
     ?>
     <h1>Clientes</h1>
     <?php
-    if($_SERVER['REQUEST_METHOD'] == "POST"){
-        mostrar_usuarios($conexao);
-    } 
+    mostrar_usuarios($conexao);
     ?>
     <h4>listar todos os clientes, baseados na sua conta, e listar quantas cotaçoes ja aforam feitas por eles</h4>
-    <?php include '../includes/footer.php'?>
+    <?php include __DIR__ . '/../includes/footer.php'; ?>
     
 </body>
 </html>
