@@ -1,228 +1,351 @@
 # FernanTravels
 
-## Visão geral
+Aplicação web da agência de viagens **FernanTravels**, desenvolvida em PHP e PostgreSQL. O sistema permite criar contas, autenticar usuários e solicitar, consultar e atualizar cotações de viagem. Também possui páginas para consultar clientes e cotações.
 
-O FernanTravels é um sistema para uma empresa de viagens. Ele permite cadastrar clientes, manter seus dados organizados e acompanhar as cotações solicitadas.
+## Funcionalidades
 
-Os dados do cliente incluem nome, data de nascimento, documento, histórico de viagens e cotações. As informações enviadas pelos formulários devem ser armazenadas no banco de dados para que a equipe de vendas possa consultá-las ao preparar uma cotação.
+- Cadastro de usuário com nome, e-mail e senha armazenada com `password_hash()`.
+- Login e logout com sessão PHP; a senha é conferida com `password_verify()`.
+- Proteção de páginas que exigem autenticação.
+- Criação de cotação com dados de contato, origem, destino, datas, passageiros, bagagens e opções de hotel e carro.
+- Consulta do histórico de cotações do usuário autenticado.
+- Atualização de cotação, limitada ao usuário proprietário na operação de gravação.
+- Páginas de consulta para listar cotações, listar clientes, consultar um cliente e consultar o histórico de um cliente.
+- Exclusão de cotação por ID.
+- Menu administrativo exibido para usuários cuja sessão tenha o perfil `admin`.
 
-## Perfis e permissões
+> As páginas administrativas requerem login. Antes de disponibilizar o sistema publicamente, confirme que cada página administrativa também exige o perfil de administrador no servidor, e não apenas no menu.
 
-- **Administrador:** tem acesso a todas as funcionalidades e pode conceder permissões a outros usuários.
-- **Gerente:** pode executar ações de acordo com as permissões concedidas pelo administrador. Usuários com perfil de gerente podem consultar cotações de outros clientes.
-- **Cliente:** pode consultar, atualizar e excluir as próprias cotações, mas não pode visualizar cotações de outros clientes.
+## Tecnologias
 
-## Requisitos funcionais
+- PHP
+- PostgreSQL
+- PDO com o driver `pdo_pgsql`
+- HTML
+- CSS
 
-### Contas e acesso
+## Requisitos
 
-1. Permitir que clientes criem uma conta informando nome, e-mail e senha.
-2. Permitir que clientes, gerentes e administradores façam login.
-3. Verificar se o usuário está autenticado nas páginas que exigem login.
-4. Permitir que o administrador conceda permissões aos gerentes.
-5. Restringir as ações dos gerentes às permissões concedidas pelo administrador.
+- PHP 7 ou superior, com as extensões `PDO` e `pdo_pgsql`.
+- PostgreSQL.
+- Git (opcional, para clonar o repositório).
+- Navegador web atualizado.
 
-### Clientes
+## Como executar localmente
 
-6. Permitir a gestão do perfil do cliente.
-7. Armazenar dados dos clientes, incluindo histórico de viagens e informações de passageiros recorrentes, para agilizar futuras compras.
+### 1. Obter o projeto
 
-### Cotações
+Clone o repositório e entre na pasta:
 
-8. Permitir que o cliente solicite uma cotação.
-9. Permitir que o cliente consulte, atualize ou exclua as próprias cotações.
-10. Permitir que usuários com as permissões adequadas consultem e alterem cotações.
-11. Exibir o status de cada cotação, como “Em avaliação”, “Em produção” ou “Finalizada”, para que o cliente acompanhe o andamento.
+```bash
+git clone https://github.com/GabrielGouvea01/fernantravels.git
+cd FernanTravels
+```
 
+### 2. Criar e configurar o banco de dados
 
-Autenticação e Controle de Acesso
-1. Permitir que clientes criem uma conta informando nome, e-mail e senha.
-cadastrarCliente(dadosCliente): Recebe os dados de cadastro (nome, email, senha), valida e cria o registro do cliente no banco de dados.
+O projeto não contém um arquivo de dump do PostgreSQL. Crie o banco de dados e as tabelas usando o SQL abaixo. A coluna `perfil` é necessária para o login e para a navegação administrativa.
 
-validarDadosCadastro(dados): Verifica se os campos obrigatórios estão preenchidos e se o formato do e-mail é válido.
+```sql
+CREATE DATABASE fernantravels;
+```
 
-verificarEmailExistente(email): Checa se o e-mail informado já está cadastrado para evitar duplicidade.
+Conecte-se ao banco `fernantravels` e crie as tabelas:
 
-criptografarSenha(senha): Gera o hash seguro da senha (ex: usando bcrypt ou Argon2) antes de salvar no banco de dados.
-
-2. Permitir que clientes, gerentes e administradores façam login.
-autenticarUsuario(email, senha): Valida o e-mail e compara o hash da senha enviada com o armazenado no banco.
-
-gerarTokenAutenticacao(usuarioId, perfil): Cria um token de acesso seguro (ex: JWT) contendo a identificação do usuário e seu tipo de perfil (CLIENTE, GERENTE ou ADMINISTRADOR).
-
-fazerLogout(token): Invalida o token de autenticação (se utilizar controle de revogação/blacklist).
-
-3. Verificar se o usuário está autenticado nas páginas que exigem login.
-verificarTokenAutenticacao(token): Decodifica e valida se o token enviado na requisição é autêntico e não expirou.
-
-middlewareAutenticacao(requisicao, resposta, proximo): Intercepta as requisições para rotas protegidas e bloqueia o acesso caso o usuário não possua um token válido.
-
-obterUsuarioAtual(token): Retorna os dados fundamentais do usuário logado a partir do token ativo.
-
-4. Permitir que o administrador conceda permissões aos gerentes.
-concederPermissaoGerente(gerenteId, listaPermissoes): Associa um conjunto de permissões específicas a um determinado perfil de gerente.
-
-atualizarPermissoesGerente(gerenteId, novasPermissoes): Sobrescreve ou edita as permissões já concedidas a um gerente.
-
-listarPermissoesDisponiveis(): Retorna todas as permissões/módulos existentes no sistema que podem ser distribuídos.
-
-5. Restringir as ações dos gerentes às permissões concedidas pelo administrador.
-verificarPermissao(usuarioId, permissaoRequerida): Checa se o usuário atual possui a permissão específica necessária para executar a ação solicitada.
-
-middlewareAutorizacao(permissaoRequerida): Middleware acoplado às rotas administrativas que bloqueia a requisição (retornando erro 403 Forbidden) caso o gerente não tenha a permissão exigida.
-
-Clientes
-6. Permitir a gestão do perfil do cliente.
-obterPerfilCliente(clienteId): Busca e exibe os dados cadastrais do cliente logado.
-
-atualizarPerfilCliente(clienteId, novosDados): Atualiza informações como telefone, endereço, CPF e foto de perfil.
-
-alterarSenhaCliente(clienteId, senhaAtual, novaSenha): Permite ao cliente redefinir sua senha verificando primeiro a senha antiga.
-
-7. Armazenar dados dos clientes, incluindo histórico de viagens e informações de passageiros recorrentes, para agilizar futuras compras.
-obterHistoricoViagens(clienteId): Busca todas as reservas e viagens anteriores já concluídas ou confirmadas do cliente.
-
-adicionarPassageiroRecorrente(clienteId, dadosPassageiro): Cadastra os dados de um acompanhante habitual (nome, data de nascimento, CPF/passaporte).
-
-listarPassageirosRecorrentes(clienteId): Traz a lista de passageiros vinculados à conta para seleção rápida no checkout.
-
-atualizarPassageiroRecorrente(clienteId, passageiroId, novosDados): Edita as informações de um acompanhante salvo.
-
-removerPassageiroRecorrente(clienteId, passageiroId): Exclui um passageiro salvo da lista do cliente.
-
-Cotações
-8. Permitir que o cliente solicite uma cotação.
-solicitarCotacao(clienteId, dadosCotacao): Cria um novo registro de cotação com os parâmetros da viagem (destino, datas flexíveis, número de passageiros, orçamento estimado, observações).
-
-notificarNovaCotacao(cotacaoId): Envia alerta/e-mail para a equipe interna de gerentes informando que uma nova cotação foi aberta.
-
-9. Permitir que o cliente consulte, atualize ou exclua as próprias cotações.
-listarCotacoesDoCliente(clienteId): Traz todas as cotações criadas pelo cliente logado.
-
-obterCotacaoPorId(cotacaoId, clienteId): Exibe os detalhes de uma cotação específica, garantindo que ela pertença ao cliente logado.
-
-atualizarCotacaoDoCliente(cotacaoId, clienteId, novosDados): Permite alterar detalhes da cotação enquanto ela estiver em status editável.
-
-cancelarOuExcluirCotacao(cotacaoId, clienteId): Cancela ou remove a solicitação de cotação feita pelo cliente.
-
-10. Permitir que usuários com as permissões adequadas consultem e alterem cotações.
-listarTodasCotacoes(filtros): Permite que gerentes e admins visualizem todas as cotações da agência, filtrando por data, cliente ou status.
-
-atribuirCotacaoAGerente(cotacaoId, gerenteId): Define qual membro da equipe é o responsável por tratar aquela cotação.
-
-atualizarValoresCotacao(cotacaoId, dadosPreco, detalhesProposta): Insere os preços, voos, hotéis sugeridos e opções de pagamento na cotação do cliente.
-
-11. Exibir o status de cada cotação, como “Em avaliação”, “Em produção” ou “Finalizada”, para que o cliente acompanhe o andamento.
-atualizarStatusCotacao(cotacaoId, novoStatus, usuarioId): Altera o estado da cotação no sistema (ex: de "Em avaliação" para "Em produção" ou "Finalizada").
-
-obterStatusCotacao(cotacaoId): Retorna o status atual e o histórico de alterações para exibição na linha do tempo da cotação.
-
-notificarMudancaStatus(cotacaoId, clienteId, novoStatus): Dispara um e-mail/notificação automática para o cliente sempre que o status da sua cotação for alterado pela equipe.
-
-Para resolver o seu problema, você não precisa necessariamente copiar fisicamente uma coluna de uma tabela para outra toda vez que fizer uma cotação. Em bancos de dados relacionais (SQL), a melhor prática é relacionar as tabelas através de uma Chave Estrangeira (FOREIGN KEY). [1] 
-Dessa forma, a cotação fica salva em uma tabela com o "carimbo" (ID) do cliente que a criou. A regra de "só o cliente logado pode ver" não é controlada pelo banco de dados sozinho, mas sim pelo seu código (Node.js, Python, PHP, etc.), que pega o ID do usuário logado e faz um filtro WHERE na consulta SQL.
-Veja como estruturar essa lógica passo a passo:
-Primeiro, garantimos que a tabela de cotações saiba a qual cliente ela pertence por meio de uma coluna cliente_id. [2] 
-
--- 1. Tabela de Clientes/ContasCREATE TABLE clientes (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    nome VARCHAR(100),
-    email VARCHAR(100) UNIQUE
-);
--- 2. Tabela de Cotações (relacionada ao cliente)CREATE TABLE cotacoes (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    valor_cotado DECIMAL(10, 2),
-    produto VARCHAR(100),
-    data_cotacao DATETIME DEFAULT CURRENT_TIMESTAMP,
-    cliente_id INT, -- Esta coluna faz o vínculo com a tabela clientes
-    FOREIGN KEY (cliente_id) REFERENCES clientes(id) -- Garante a integridade
-);
-
-------------------------------
-Quando o sistema faz uma cotação, a sua aplicação web ou mobile já sabe quem é o usuário que está logado (vamos supor que o ID dele seja 5). Na hora de salvar na tabela cotacoes, você passa esse ID:
-
-INSERT INTO cotacoes (valor_cotado, produto, cliente_id)VALUES (1500.00, 'Notebook Pro', 5); -- O número 5 é o ID do cliente logado capturado pelo seu sistema
-
-------------------------------
-Para garantir que o cliente só veja as próprias cotações, o seu sistema executará um SELECT utilizando a cláusula WHERE filtrando estritamente pelo ID do cliente logado.
-Se o cliente 5 tentar acessar a página de cotações, o seu código backend rodará esta query:
-
-SELECT id, valor_cotado, produto, data_cotacaoFROM cotacoesWHERE cliente_id = 5; -- Filtro de segurança obrigatório
-
-Por que isso é seguro?
-Mesmo que existam milhares de cotações de outros clientes na tabela cotacoes, o banco de dados só vai retornar as linhas onde o cliente_id seja exatamente igual a 5. Se outro usuário malicioso tentar acessar a mesma página, o seu backend identificará o ID dele (ex: cliente_id = 9) e a busca trará apenas os dados do cliente 9.
-Qual linguagem de programação ou framework (ex: Node.js, PHP, Python) você está usando no backend para fazer esse sistema de login? Se quiser, posso te mostrar como fica o código que junta o SQL com a sessão do usuário logado.
-
-[1] [https://www.quora.com](https://www.quora.com/When-you-have-two-tables-connected-through-a-foreign-key-how-can-you-make-sure-that-updates-done-to-one-table-are-also-updated-accordingly-in-the-other)
-[2] [https://support.microsoft.com](https://support.microsoft.com/pt-br/excel/relationships-between-tables-in-a-data-model)
-
-
-
-# Banco de dados
-nome: fernantravels
-usuario: fernantravels
-senha: fernantravels
-
-### tabela de cotação
-
-nome: cotacao
-colunas:
-- nome
-- telefone
-- email
-- origem
-- destino
-- ida
-- volta
-- qnt_adultos
-- qnt_criancas
-- qnt_bagagens
-- hotel
-- carro
-
-
-
-- pegar id da conta do cliente no banco de dados
-- atribuir esse id a uma sessao
-- quando o cliente fazer uma cotaçao atribuir o id que esta na sessao a ela
-- quando ele for ver a cotaçao usar um SELECT COM WHERE com base no id
-
-
-CREATE TABLE usuarios(
+```sql
+CREATE TABLE usuarios (
     id SERIAL PRIMARY KEY,
     nome VARCHAR(120) NOT NULL UNIQUE,
     email VARCHAR(150) NOT NULL UNIQUE,
-    senha VARCHAR(255) NOT NULL 
+    senha VARCHAR(255) NOT NULL,
+    perfil VARCHAR(20) NOT NULL DEFAULT 'cliente'
 );
 
-CREATE TABLE cotacao(
+CREATE TABLE cotacao (
     id SERIAL PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
-    telefone INT NOT NULL, 
-    email VARCHAR(100) NOT NULL, 
-    origem VARCHAR(100) NOT NULL, 
-    destino VARCHAR(100) NOT NULL, 
-    ida DATE NOT NULL, 
-    volta DATE NOT NULL, 
-    qnt_adultos INT NOT NULL, 
-    qnt_criancas INT NOT NULL, 
-    qnt_bagagens INT NOT NULL, 
-    hotel VARCHAR(50) NOT NULL, 
-    carro VARCHAR(50) NOT NULL, 
-    id_cliente INT REFERENCES usuarios(id)
+    telefone INTEGER NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    origem VARCHAR(100) NOT NULL,
+    destino VARCHAR(100) NOT NULL,
+    ida DATE NOT NULL,
+    volta DATE NOT NULL,
+    qnt_adultos INTEGER NOT NULL,
+    qnt_criancas INTEGER NOT NULL,
+    qnt_bagagens INTEGER NOT NULL,
+    hotel VARCHAR(50) NOT NULL,
+    carro VARCHAR(50) NOT NULL,
+    id_cliente INTEGER REFERENCES usuarios(id)
 );
+```
 
+> O campo `telefone` está definido como inteiro no esquema atual. Portanto, cadastre o número sem espaços, parênteses, hífens ou o sinal `+`.
 
-### SENHA ADMIN 12345
+### 3. Configurar a conexão
 
+Edite `database/connect.php` para usar o endereço, o nome do banco, o usuário e a senha do seu PostgreSQL. Não publique credenciais reais no GitHub.
 
-ALTER TABLE usuarios
-ADD COLUMN perfil VARCHAR(20) NOT NULL DEFAULT 'cliente';
+```php
+$host = 'localhost';
+$dbname = 'fernantravels';
+$user = 'SEU_USUARIO_POSTGRES';
+$pass = 'SUA_SENHA';
+```
 
+### 4. Iniciar o servidor PHP
 
+Execute o comando a partir da pasta raiz do projeto:
+
+```bash
+php -S localhost:8000
+```
+
+Abra [http://localhost:8000](http://localhost:8000) no navegador.
+
+### 5. Criar uma conta administrativa
+
+1. Cadastre uma conta pela página de cadastro do sistema.
+2. No PostgreSQL, altere o perfil da conta que deverá administrar o sistema:
+
+```sql
 UPDATE usuarios
 SET perfil = 'admin'
-WHERE email = 'admin@admin.com';
+WHERE email = 'admin@exemplo.com';
+```
 
+3. Entre novamente na aplicação para que a sessão carregue o perfil atualizado.
 
-SELECT * FROM usuarios;
+Novas contas recebem o perfil `cliente` por padrão. O sistema não cria uma conta administrativa inicial.
+
+## Estrutura do projeto
+
+```text
+FernanTravels/
+├── admin/
+│   ├── cliente.php
+│   ├── deletar_cotacao.php
+│   ├── historico_cliente.php
+│   ├── ver_clientes.php
+│   └── ver_cotacoes.php
+├── app/
+│   ├── atualizar_cota.php
+│   ├── historico.php
+│   └── nova_cotacao.php
+├── database/
+│   └── connect.php
+├── image/
+│   └── logo_oficial.jpg
+├── includes/
+│   ├── footer.php
+│   ├── functions.php
+│   └── header.php
+├── login/
+│   ├── admin.php
+│   ├── cadastrar_usuario.php
+│   ├── login.php
+│   ├── logout.php
+│   └── verifica_user.php
+├── Style/
+│   └── style.css
+└── index.php
+```
+
+### Páginas principais
+
+| Caminho | Descrição |
+| --- | --- |
+| `index.php` | Apresentação da FernanTravels. |
+| `login/cadastrar_usuario.php` | Formulário para criar uma conta. |
+| `login/login.php` | Autentica uma conta e inicia a sessão. |
+| `login/logout.php` | Encerra a sessão atual. |
+| `app/nova_cotacao.php` | Formulário de solicitação de cotação; exige login. |
+| `app/historico.php` | Lista as cotações associadas ao usuário autenticado. |
+| `app/atualizar_cota.php` | Busca e atualiza uma cotação. |
+| `admin/ver_cotacoes.php` | Lista as cotações cadastradas. |
+| `admin/ver_clientes.php` | Lista os clientes e a quantidade de cotações de cada um. |
+| `admin/cliente.php` | Consulta um cliente pelo ID. |
+| `admin/historico_cliente.php` | Consulta cotações pelo ID do cliente. |
+| `admin/deletar_cotacao.php` | Exclui uma cotação pelo ID. |
+
+### Arquivos compartilhados
+
+- `database/connect.php`: cria a conexão PDO com o PostgreSQL.
+- `includes/functions.php`: contém operações de cadastro e consulta de usuários, criação e atualização de cotações, histórico, listagem e exclusão.
+- `includes/header.php` e `includes/footer.php`: componentes compartilhados da interface.
+- `login/verifica_user.php`: inicia a sessão quando necessário e redireciona visitantes não autenticados para o login.
+- `login/admin.php`: verifica se há sessão autenticada com perfil `admin`.
+- `Style/style.css`: estilos compartilhados.
+- `image/logo_oficial.jpg`: logo utilizada no cabeçalho.
+
+## Funções utilizadas
+
+As funções abaixo estão em `includes/functions.php`. As páginas chamam essas funções para executar tarefas repetidas, como consultar o banco e apresentar os resultados.
+
+### Exibição e proteção de dados
+
+#### `escapar_html($valor)`
+
+Prepara um valor antes de mostrá-lo dentro de uma página HTML. Converte caracteres especiais para que textos vindos de formulários ou do banco sejam exibidos como texto, em vez de serem interpretados como marcação HTML.
+
+É usada ao exibir dados de usuários, mensagens e cotações.
+
+#### `exibir_cotacoes($cotacoes, $exibir_id = false)`
+
+Recebe uma lista de cotações e mostra seus campos na página. Usa uma lista de nomes e rótulos para apresentar informações como origem, destino, datas, passageiros, hotel e carro.
+
+- Se a lista estiver vazia, mostra que nenhuma cotação foi encontrada.
+- Quando `$exibir_id` é `true`, também mostra o ID de cada cotação.
+- Usa `escapar_html()` para preparar os valores exibidos.
+
+### Cotações
+
+#### `nova_cotacao($conexao, $nome, $telefone, $email, $origem, $destino, $ida, $volta, $qnt_adultos, $qnt_criancas, $qnt_bagagens, $hotel, $carro, $id_cliente)`
+
+Insere uma cotação na tabela `cotacao`. `$conexao` é a conexão PDO com o banco. Os demais parâmetros são os dados do formulário: nome, telefone e e-mail de contato; origem, destino, datas de ida e volta; quantidades de adultos, crianças e bagagens; respostas sobre hotel e carro; e o ID do usuário conectado.
+
+O ID do usuário é gravado em `id_cliente`, relacionando o pedido à conta que o solicitou.
+
+Os valores são enviados como parâmetros da consulta PDO, em vez de serem concatenados diretamente no SQL.
+
+#### `atualizar_cotacao($conexao, $nome, $telefone, $email, $origem, $destino, $ida, $volta, $qnt_adultos, $qnt_criancas, $qnt_bagagens, $hotel, $carro, $id_cliente, $id)`
+
+Atualiza os dados de contato e da viagem já descritos em `nova_cotacao()`. Recebe também `$id_cliente`, que identifica o dono da cotação, e `$id`, que identifica qual cotação será alterada. A consulta procura simultaneamente pelos dois IDs (`id` e `id_cliente`); assim, a gravação só acontece se a cotação pertencer à conta informada.
+
+Ao final, mostra uma mensagem indicando se uma cotação foi atualizada ou se não foi encontrada para aquele usuário.
+
+#### `historico_unico($conexao, $id_cliente)`
+
+Recebe a conexão PDO e o ID do usuário. Busca todas as cotações cujo `id_cliente` corresponda a esse ID, ordena pelo ID decrescente (mais recentes primeiro) e envia o resultado para `exibir_cotacoes()`.
+
+É usada para mostrar o histórico do usuário conectado e também na consulta administrativa de histórico por cliente.
+
+#### `historico_geral($conexao)`
+
+Recebe a conexão PDO, busca todas as cotações da tabela, ordena pelo ID decrescente e mostra os resultados usando `exibir_cotacoes()`. É usada na página de listagem geral de cotações.
+
+#### `deletar_cotacao($conexao, $id)`
+
+Recebe a conexão PDO e o ID da cotação a ser excluída. Apaga da tabela `cotacao` a linha correspondente e informa se uma cotação foi removida ou se o ID não foi encontrado.
+
+### Usuários
+
+#### `cadastrar_user($conexao, $nome, $email, $senha)`
+
+Recebe a conexão PDO, o nome, o e-mail e a senha informados no cadastro. Cria uma conta na tabela `usuarios`. Antes de salvar, transforma a senha usando `password_hash()`. O login compara essa senha protegida com a senha digitada usando `password_verify()`.
+
+#### `consulta_user($conexao, $email)`
+
+Recebe a conexão PDO e o e-mail digitado. Procura um usuário pelo e-mail e retorna os dados necessários para o login: ID, e-mail, senha armazenada e perfil. Se não houver uma conta com esse e-mail, retorna um resultado vazio.
+
+#### `unico_usuario($conexao, $id)`
+
+Recebe a conexão PDO e o ID do usuário. Procura essa conta e, quando a encontra, mostra o nome, o e-mail e a quantidade de cotações associadas. Se o ID não corresponder a uma conta, mostra que o usuário não foi encontrado.
+
+#### `mostrar_usuarios($conexao)`
+
+Recebe a conexão PDO, busca os usuários cadastrados e mostra o ID, nome, e-mail e a quantidade de cotações de cada um. Se não encontrar contas, informa que não há clientes para listar.
+
+#### `quantidade_cotacoes($conexao, $id_cliente)`
+
+Recebe a conexão PDO e o ID do usuário. Conta quantas linhas da tabela `cotacao` estão ligadas a essa conta pelo campo `id_cliente` e devolve o total como número. É chamada por `unico_usuario()` e `mostrar_usuarios()`.
+
+> `consultar()` e `atribuir_id()` existem no arquivo de funções, mas não são chamadas pelas páginas atuais; por isso, não são descritas como parte do funcionamento em uso.
+
+## Banco de dados
+
+O PostgreSQL armazena os dados em duas tabelas principais. `usuarios` guarda as contas e `cotacao` guarda os pedidos de viagem. O relacionamento é feito pelo campo `id_cliente` da cotação, que aponta para `usuarios.id`.
+
+### Tabela `usuarios`
+
+Guarda as contas usadas para entrar no sistema.
+
+| Campo | Tipo | Funcionamento |
+| --- | --- | --- |
+| `id` | `SERIAL PRIMARY KEY` | Número identificador criado pelo PostgreSQL para cada conta. É usado por outras partes do sistema para reconhecer o usuário. |
+| `nome` | `VARCHAR(120) NOT NULL UNIQUE` | Nome da pessoa. É obrigatório e não pode se repetir conforme a definição atual da tabela. |
+| `email` | `VARCHAR(150) NOT NULL UNIQUE` | E-mail usado no login. É obrigatório e deve ser único. |
+| `senha` | `VARCHAR(255) NOT NULL` | Guarda o resultado de `password_hash()`, não a senha digitada em texto simples. |
+| `perfil` | `VARCHAR(20) NOT NULL DEFAULT 'cliente'` | Informa o tipo da conta. Contas novas começam como `cliente`; o menu administrativo verifica o valor `admin`. |
+
+### Tabela `cotacao`
+
+Guarda os dados de contato e as preferências de cada pedido de cotação. Cada linha representa uma solicitação.
+
+| Campo | Tipo | Funcionamento |
+| --- | --- | --- |
+| `id` | `SERIAL PRIMARY KEY` | Número identificador da cotação, criado pelo PostgreSQL. |
+| `nome` | `VARCHAR(100) NOT NULL` | Nome de contato informado no formulário da cotação. |
+| `telefone` | `INTEGER NOT NULL` | Telefone de contato. Por ser inteiro no esquema documentado, não armazena sinais, espaços ou pontuação. |
+| `email` | `VARCHAR(100) NOT NULL` | E-mail de contato para a solicitação. |
+| `origem` | `VARCHAR(100) NOT NULL` | Local de partida informado. |
+| `destino` | `VARCHAR(100) NOT NULL` | Destino pretendido. |
+| `ida` | `DATE NOT NULL` | Data planejada para a ida. |
+| `volta` | `DATE NOT NULL` | Data planejada para a volta. |
+| `qnt_adultos` | `INTEGER NOT NULL` | Quantidade de adultos incluída na viagem. |
+| `qnt_criancas` | `INTEGER NOT NULL` | Quantidade de crianças incluída na viagem. |
+| `qnt_bagagens` | `INTEGER NOT NULL` | Quantidade de bagagens informada. |
+| `hotel` | `VARCHAR(50) NOT NULL` | Resposta sobre incluir hotel na cotação, enviada pelo formulário como `sim` ou `nao`. |
+| `carro` | `VARCHAR(50) NOT NULL` | Resposta sobre incluir carro na cotação, enviada pelo formulário como `sim` ou `nao`. |
+| `id_cliente` | `INTEGER REFERENCES usuarios(id)` | Liga a cotação à conta que a solicitou. A função de criação preenche esse campo com o ID salvo na sessão. |
+
+### Como as tabelas trabalham juntas
+
+1. O usuário cria uma conta. O banco gera seu `usuarios.id` e define `perfil` como `cliente`, a menos que seja alterado manualmente.
+2. Ao fazer login, a aplicação procura a conta pelo e-mail e guarda `id` e `perfil` na sessão.
+3. Ao solicitar uma cotação, a aplicação salva os dados do formulário na tabela `cotacao` e usa o ID da sessão em `id_cliente`.
+4. Para mostrar o histórico do usuário, a aplicação consulta as linhas em que `cotacao.id_cliente` é igual ao ID da sessão.
+5. Para contar as cotações de um cliente, a aplicação conta quantas linhas da tabela `cotacao` usam aquele `id_cliente`.
+
+O relacionamento representado no diagrama é de um usuário para várias cotações. No SQL fornecido, `id_cliente` referencia `usuarios.id`, mas não está marcado como `NOT NULL`; portanto, o banco permite uma cotação sem usuário associado, mesmo que o fluxo normal da aplicação envie o ID da sessão.
+
+```mermaid
+erDiagram
+    USUARIOS o|--o{ COTACAO : solicita
+
+    USUARIOS {
+        integer id PK
+        varchar nome UK
+        varchar email UK
+        varchar senha
+        varchar perfil
+    }
+
+    COTACAO {
+        integer id PK
+        varchar nome
+        integer telefone
+        varchar email
+        varchar origem
+        varchar destino
+        date ida
+        date volta
+        integer qnt_adultos
+        integer qnt_criancas
+        integer qnt_bagagens
+        varchar hotel
+        varchar carro
+        integer id_cliente FK
+    }
+```
+
+## Fluxo de autenticação e cotação
+
+```mermaid
+flowchart TD
+    A[Visitante] --> B[Criar conta]
+    B --> C[Senha armazenada com password_hash]
+    C --> D[Entrar com e-mail e senha]
+    D --> E{Credenciais válidas?}
+    E -- Não --> F[Exibir mensagem de erro]
+    E -- Sim --> G[Guardar ID e perfil na sessão]
+    G --> H[Solicitar cotação]
+    H --> I[Salvar cotação ligada ao usuário]
+    G --> J[Consultar histórico próprio]
+    J --> K[Filtrar cotações pelo ID da sessão]
+```
+
+## Observações
+
+- Use credenciais próprias no ambiente local e mantenha-as fora do controle de versão.
+- Para que o perfil apareça no menu administrativo, a sessão precisa conter `perfil = 'admin'`.
+- As rotas e os recursos descritos neste README correspondem aos arquivos atualmente presentes no projeto; o sistema não implementa reservas, pagamentos, emissão de passagens, notificações ou histórico de alteração de status de cotações.

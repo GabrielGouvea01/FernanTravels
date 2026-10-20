@@ -1,17 +1,20 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    <!-- Configura a página do formulário de cotação. -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../Style/style.css">
     <title>Fazer Cotação</title>
 </head>
 <body>
+    <!-- Exige login e carrega as funções, a conexão e o cabeçalho. -->
     <?php 
     require_once __DIR__ . '/../login/verifica_user.php';
     require_once __DIR__ . '/../includes/functions.php';
     include __DIR__ . '/../includes/header.php';
     ?>
+    <!-- Reúne os dados da viagem e do contato do cliente. -->
     <div>
         <h1>Cotação</h1>
         <form action="" method="post">
@@ -65,6 +68,7 @@
             <input type="submit" value="Enviar cotação">
         </form>
     </div>
+    <!-- Ao enviar, salva a cotação vinculada à conta autenticada. -->
     <?php 
     if ($_SERVER["REQUEST_METHOD"] === "POST"){
         nova_cotacao($conexao, $_POST['nome'] ?? '', $_POST['telefone'] ?? '', $_POST['email'] ?? '', $_POST['origem'] ?? '', $_POST['destino'] ?? '', $_POST['ida'] ?? '', $_POST['volta'] ?? '', $_POST['adultos'] ?? 0, $_POST['criancas'] ?? 0, $_POST['bagagens'] ?? 0, $_POST['escolhaH'] ?? '', $_POST['escolhaC'] ?? '', $_SESSION['id']);
