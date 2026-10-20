@@ -27,7 +27,7 @@ Aplicação web da agência de viagens **FernanTravels**, desenvolvida em PHP e 
 ## Requisitos
 
 - PHP 7 ou superior, com as extensões `PDO` e `pdo_pgsql`.
-- PostgreSQL.
+- PostgreSQL 18 e o cliente `psql` (o dump foi gerado com PostgreSQL 18.6).
 - Git (opcional, para clonar o repositório).
 - Navegador web atualizado.
 
@@ -42,48 +42,33 @@ git clone https://github.com/GabrielGouvea01/fernantravels.git
 cd FernanTravels
 ```
 
-### 2. Criar e configurar o banco de dados
+O arquivo `database/fernantravels_backup.sql` já estará na pasta `database`.
 
-O projeto não contém um arquivo de dump do PostgreSQL. Crie o banco de dados e as tabelas usando o SQL abaixo. A coluna `perfil` é necessária para o login e para a navegação administrativa.
+### 2. Criar e restaurar o banco de dados
 
-```sql
-CREATE DATABASE fernantravels;
+O dump contém a estrutura e os registros existentes no momento em que foi gerado. Ele não cria o banco nem o usuário do PostgreSQL. Como os objetos do dump pertencem ao usuário `fernantravels`, crie esse usuário e um banco vazio antes da restauração. No pgAdmin, conectado ao servidor local:
+
+1. Crie um usuario chamado `fernantravels` e defina uma senha.
+2. Crie um banco chamado `fernantravels` e escolha `fernantravels` como proprietário.
+3. Abra o PowerShell e execute o comando abaixo, ajustando o caminho caso tenha salvado o arquivo em outra pasta:
+
+```powershell
+psql -h localhost -p 5432 -U fernantravels -d fernantravels -f "/database/fernantravels_backup.sql"
 ```
 
-Conecte-se ao banco `fernantravels` e crie as tabelas:
-
 ```sql
-CREATE TABLE usuarios (
-    id SERIAL PRIMARY KEY,
-    nome VARCHAR(120) NOT NULL UNIQUE,
-    email VARCHAR(150) NOT NULL UNIQUE,
-    senha VARCHAR(255) NOT NULL,
-    perfil VARCHAR(20) NOT NULL DEFAULT 'cliente'
-);
-
-CREATE TABLE cotacao (
-    id SERIAL PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
-    telefone INTEGER NOT NULL,
-    email VARCHAR(100) NOT NULL,
-    origem VARCHAR(100) NOT NULL,
-    destino VARCHAR(100) NOT NULL,
-    ida DATE NOT NULL,
-    volta DATE NOT NULL,
-    qnt_adultos INTEGER NOT NULL,
-    qnt_criancas INTEGER NOT NULL,
-    qnt_bagagens INTEGER NOT NULL,
-    hotel VARCHAR(50) NOT NULL,
-    carro VARCHAR(50) NOT NULL,
-    id_cliente INTEGER REFERENCES usuarios(id)
-);
+-- execute em uma sessão psql conectada a um banco administrativo
+CREATE USER fernantravels WITH PASSWORD 'sua_senha';
+CREATE DATABASE fernantravels OWNER fernantravels;
 ```
 
-> O campo `telefone` está definido como inteiro no esquema atual. Portanto, cadastre o número sem espaços, parênteses, hífens ou o sinal `+`.
+Se usar os comandos SQL acima, execute `CREATE DATABASE` fora de um bloco de transação. A restauração deve ser feita em um banco vazio; ela recria as tabelas, sequências, restrições e os registros incluídos no dump.
+
+> **Atenção:** o dump inclui dados de usuários e cotações, além de hashes de senha. Trate-o como dado sensível, use-o apenas em ambiente local/autorizado e não restaure sobre um banco que contenha dados que queira preservar.
 
 ### 3. Configurar a conexão
 
-Edite `database/connect.php` para usar o endereço, o nome do banco, o usuário e a senha do seu PostgreSQL. Não publique credenciais reais no GitHub.
+Edite `database/connect.php` para usar o endereço, o nome do banco, o usuário e a senha definidos no seu PostgreSQL. Não publique credenciais reais no GitHub.
 
 ```php
 $host = 'localhost';
@@ -132,7 +117,8 @@ FernanTravels/
 │   ├── historico.php
 │   └── nova_cotacao.php
 ├── database/
-│   └── connect.php
+│   ├── connect.php
+│   └── fernantravels_backup.sql
 ├── image/
 │   └── logo_oficial.jpg
 ├── includes/
@@ -261,11 +247,11 @@ Guarda as contas usadas para entrar no sistema.
 
 | Campo | Tipo | Funcionamento |
 | --- | --- | --- |
-| `id` | `SERIAL PRIMARY KEY` | Número identificador criado pelo PostgreSQL para cada conta. É usado por outras partes do sistema para reconhecer o usuário. |
-| `nome` | `VARCHAR(120) NOT NULL UNIQUE` | Nome da pessoa. É obrigatório e não pode se repetir conforme a definição atual da tabela. |
+| `id` | `INTEGER PRIMARY KEY` com sequência | Número identificador criado pelo PostgreSQL para cada conta. É usado por outras partes do sistema para reconhecer o usuário. |
+| `nome` | `VARCHAR(150) NOT NULL UNIQUE` | Nome da pessoa. É obrigatório e não pode se repetir conforme a definição atual da tabela. |
 | `email` | `VARCHAR(150) NOT NULL UNIQUE` | E-mail usado no login. É obrigatório e deve ser único. |
 | `senha` | `VARCHAR(255) NOT NULL` | Guarda o resultado de `password_hash()`, não a senha digitada em texto simples. |
-| `perfil` | `VARCHAR(20) NOT NULL DEFAULT 'cliente'` | Informa o tipo da conta. Contas novas começam como `cliente`; o menu administrativo verifica o valor `admin`. |
+| `perfil` | `VARCHAR(20) NOT NULL DEFAULT 'cliente'` | Informa o tipo da conta. O banco define `cliente` como padrão; o menu administrativo verifica o valor `admin`. |
 
 ### Tabela `cotacao`
 
@@ -273,9 +259,9 @@ Guarda os dados de contato e as preferências de cada pedido de cotação. Cada 
 
 | Campo | Tipo | Funcionamento |
 | --- | --- | --- |
-| `id` | `SERIAL PRIMARY KEY` | Número identificador da cotação, criado pelo PostgreSQL. |
+| `id` | `INTEGER PRIMARY KEY` com sequência | Número identificador da cotação, criado pelo PostgreSQL. |
 | `nome` | `VARCHAR(100) NOT NULL` | Nome de contato informado no formulário da cotação. |
-| `telefone` | `INTEGER NOT NULL` | Telefone de contato. Por ser inteiro no esquema documentado, não armazena sinais, espaços ou pontuação. |
+| `telefone` | `VARCHAR(20) NOT NULL` | Telefone de contato armazenado como texto, preservando números com zeros iniciais e permitindo formatação. |
 | `email` | `VARCHAR(100) NOT NULL` | E-mail de contato para a solicitação. |
 | `origem` | `VARCHAR(100) NOT NULL` | Local de partida informado. |
 | `destino` | `VARCHAR(100) NOT NULL` | Destino pretendido. |
@@ -296,7 +282,7 @@ Guarda os dados de contato e as preferências de cada pedido de cotação. Cada 
 4. Para mostrar o histórico do usuário, a aplicação consulta as linhas em que `cotacao.id_cliente` é igual ao ID da sessão.
 5. Para contar as cotações de um cliente, a aplicação conta quantas linhas da tabela `cotacao` usam aquele `id_cliente`.
 
-O relacionamento representado no diagrama é de um usuário para várias cotações. No SQL fornecido, `id_cliente` referencia `usuarios.id`, mas não está marcado como `NOT NULL`; portanto, o banco permite uma cotação sem usuário associado, mesmo que o fluxo normal da aplicação envie o ID da sessão.
+O relacionamento representado no diagrama é de um usuário para várias cotações. No dump atual, `id_cliente` referencia `usuarios.id`, mas não está marcado como `NOT NULL`; portanto, o banco permite uma cotação sem usuário associado, mesmo que o fluxo normal da aplicação envie o ID da sessão.
 
 ```mermaid
 erDiagram
@@ -313,7 +299,7 @@ erDiagram
     COTACAO {
         integer id PK
         varchar nome
-        integer telefone
+        varchar telefone
         varchar email
         varchar origem
         varchar destino
