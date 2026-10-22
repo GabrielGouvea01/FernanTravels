@@ -39,7 +39,7 @@ Clone o repositório e entre na pasta:
 
 ```bash
 git clone https://github.com/GabrielGouvea01/fernantravels.git
-cd FernanTravels
+cd fernantravels
 ```
 
 O arquivo `database/fernantravels_backup.sql` já estará na pasta `database`.
@@ -72,7 +72,7 @@ Edite `database/connect.php` para usar o endereço, o nome do banco, o usuário 
 
 ```php
 $host = 'localhost';
-$dbname = 'fernantravels';
+$dbname = 'NOME_DB';
 $user = 'SEU_USUARIO_POSTGRES';
 $pass = 'SUA_SENHA';
 ```
@@ -169,13 +169,13 @@ As funções abaixo estão em `includes/functions.php`. As páginas chamam essas
 
 ### Exibição e proteção de dados
 
-#### `escapar_html($valor)`
+>#### `escapar_html($valor)`
 
 Prepara um valor antes de mostrá-lo dentro de uma página HTML. Converte caracteres especiais para que textos vindos de formulários ou do banco sejam exibidos como texto, em vez de serem interpretados como marcação HTML.
 
 É usada ao exibir dados de usuários, mensagens e cotações.
 
-#### `exibir_cotacoes($cotacoes, $exibir_id = false)`
+>#### `exibir_cotacoes($cotacoes, $exibir_id = false)`
 
 Recebe uma lista de cotações e mostra seus campos na página. Usa uma lista de nomes e rótulos para apresentar informações como origem, destino, datas, passageiros, hotel e carro.
 
@@ -185,7 +185,7 @@ Recebe uma lista de cotações e mostra seus campos na página. Usa uma lista de
 
 ### Cotações
 
-#### `nova_cotacao($conexao, $nome, $telefone, $email, $origem, $destino, $ida, $volta, $qnt_adultos, $qnt_criancas, $qnt_bagagens, $hotel, $carro, $id_cliente)`
+>#### `nova_cotacao($conexao, $nome, $telefone, $email, $origem, $destino, $ida, $volta, $qnt_adultos, $qnt_criancas, $qnt_bagagens, $hotel, $carro, $id_cliente)`
 
 Insere uma cotação na tabela `cotacao`. `$conexao` é a conexão PDO com o banco. Os demais parâmetros são os dados do formulário: nome, telefone e e-mail de contato; origem, destino, datas de ida e volta; quantidades de adultos, crianças e bagagens; respostas sobre hotel e carro; e o ID do usuário conectado.
 
@@ -193,45 +193,45 @@ O ID do usuário é gravado em `id_cliente`, relacionando o pedido à conta que 
 
 Os valores são enviados como parâmetros da consulta PDO, em vez de serem concatenados diretamente no SQL.
 
-#### `atualizar_cotacao($conexao, $nome, $telefone, $email, $origem, $destino, $ida, $volta, $qnt_adultos, $qnt_criancas, $qnt_bagagens, $hotel, $carro, $id_cliente, $id)`
+>#### `atualizar_cotacao($conexao, $nome, $telefone, $email, $origem, $destino, $ida, $volta, $qnt_adultos, $qnt_criancas, $qnt_bagagens, $hotel, $carro, $id_cliente, $id)`
 
 Atualiza os dados de contato e da viagem já descritos em `nova_cotacao()`. Recebe também `$id_cliente`, que identifica o dono da cotação, e `$id`, que identifica qual cotação será alterada. A consulta procura simultaneamente pelos dois IDs (`id` e `id_cliente`); assim, a gravação só acontece se a cotação pertencer à conta informada.
 
 Ao final, mostra uma mensagem indicando se uma cotação foi atualizada ou se não foi encontrada para aquele usuário.
 
-#### `historico_unico($conexao, $id_cliente)`
+>#### `historico_unico($conexao, $id_cliente)`
 
 Recebe a conexão PDO e o ID do usuário. Busca todas as cotações cujo `id_cliente` corresponda a esse ID, ordena pelo ID decrescente (mais recentes primeiro) e envia o resultado para `exibir_cotacoes()`.
 
 É usada para mostrar o histórico do usuário conectado e também na consulta administrativa de histórico por cliente.
 
-#### `historico_geral($conexao)`
+>#### `historico_geral($conexao)`
 
 Recebe a conexão PDO, busca todas as cotações da tabela, ordena pelo ID decrescente e mostra os resultados usando `exibir_cotacoes()`. É usada na página de listagem geral de cotações.
 
-#### `deletar_cotacao($conexao, $id)`
+>#### `deletar_cotacao($conexao, $id)`
 
 Recebe a conexão PDO e o ID da cotação a ser excluída. Apaga da tabela `cotacao` a linha correspondente e informa se uma cotação foi removida ou se o ID não foi encontrado.
 
 ### Usuários
 
-#### `cadastrar_user($conexao, $nome, $email, $senha)`
+>#### `cadastrar_user($conexao, $nome, $email, $senha)`
 
 Recebe a conexão PDO, o nome, o e-mail e a senha informados no cadastro. Cria uma conta na tabela `usuarios`. Antes de salvar, transforma a senha usando `password_hash()`. O login compara essa senha protegida com a senha digitada usando `password_verify()`.
 
-#### `consulta_user($conexao, $email)`
+>#### `consulta_user($conexao, $email)`
 
 Recebe a conexão PDO e o e-mail digitado. Procura um usuário pelo e-mail e retorna os dados necessários para o login: ID, e-mail, senha armazenada e perfil. Se não houver uma conta com esse e-mail, retorna um resultado vazio.
 
-#### `unico_usuario($conexao, $id)`
+>#### `unico_usuario($conexao, $id)`
 
 Recebe a conexão PDO e o ID do usuário. Procura essa conta e, quando a encontra, mostra o nome, o e-mail e a quantidade de cotações associadas. Se o ID não corresponder a uma conta, mostra que o usuário não foi encontrado.
 
-#### `mostrar_usuarios($conexao)`
+>#### `mostrar_usuarios($conexao)`
 
 Recebe a conexão PDO, busca os usuários cadastrados e mostra o ID, nome, e-mail e a quantidade de cotações de cada um. Se não encontrar contas, informa que não há clientes para listar.
 
-#### `quantidade_cotacoes($conexao, $id_cliente)`
+>#### `quantidade_cotacoes($conexao, $id_cliente)`
 
 Recebe a conexão PDO e o ID do usuário. Conta quantas linhas da tabela `cotacao` estão ligadas a essa conta pelo campo `id_cliente` e devolve o total como número. É chamada por `unico_usuario()` e `mostrar_usuarios()`.
 
@@ -335,3 +335,38 @@ flowchart TD
 - Use credenciais próprias no ambiente local e mantenha-as fora do controle de versão.
 - Para que o perfil apareça no menu administrativo, a sessão precisa conter `perfil = 'admin'`.
 - As rotas e os recursos descritos neste README correspondem aos arquivos atualmente presentes no projeto; o sistema não implementa reservas, pagamentos, emissão de passagens, notificações ou histórico de alteração de status de cotações.
+
+
+### 5.2 Diagrama de casos de uso
+
+O diagrama resume as ações disponíveis para clientes e administradores. A autorização das telas administrativas é verificada no servidor.
+
+```mermaid
+flowchart LR
+    Cliente["Cliente"]
+    Admin["Administrador"]
+    subgraph HighTechSchool["Sistema FernanTravels"]
+        Cotacao(["Fazer Cotacao"])
+        HistoricoPropio(["Mostra apenas a sua propia cotação"])
+        AtualizaCotacao(["Atualiza a cotação existente"])
+        Login(["Entrar ou sair da conta"])
+        HistoricoGeral(["Mostrar todas as cotações"])
+        Clientes(["Mostrar todos os usuarios cadastrados"])
+        HistoricoUnico(["Mostra uma cotação pelo ID"])
+        ClienteUnico(["Busca um cliente pelo ID"])
+        Deletar(["Deleta qualquer cotação pelo ID"])
+    end
+    Cliente --> Cotacao
+    Cliente --> HistoricoPropio
+    Cliente --> AtualizaCotacao
+    Admin --> Login
+    Admin --> Cotacao
+    Admin --> HistoricoPropio
+    Admin --> AtualizaCotacao
+    Admin --> Login
+    Admin --> HistoricoGeral
+    Admin --> Clientes
+    Admin --> HistoricoUnico
+    Admin --> ClienteUnico
+    Admin --> Deletar
+```

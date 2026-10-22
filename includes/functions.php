@@ -106,15 +106,7 @@ function atualizar_cotacao($conexao, $nome, $telefone, $email, $origem, $destino
         : 'Cotação não encontrada para este usuário.';
 }
 
-// Procura uma cotação pelo ID e mostra o resultado.
-function consultar($conexao, $id)
-{
-    $stmt = $conexao->prepare('SELECT * FROM cotacao WHERE id = :id');
-    $stmt->execute([':id' => $id]);
-    $cotacao = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    exibir_cotacoes($cotacao ? [$cotacao] : [], true);
-}
 
 // Busca e mostra todas as cotações de um cliente.
 function historico_unico($conexao, $id_cliente)
@@ -212,6 +204,18 @@ function quantidade_cotacoes($conexao, $id_cliente)
     $stmt->execute([':id_cliente' => $id_cliente]);
 
     return (int) $stmt->fetchColumn();
+}
+
+
+
+// Procura uma cotação pelo ID e mostra o resultado.
+function consultar($conexao, $id)
+{
+    $stmt = $conexao->prepare('SELECT * FROM cotacao WHERE id = :id');
+    $stmt->execute([':id' => $id]);
+    $cotacao = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    exibir_cotacoes($cotacao ? [$cotacao] : [], true);
 }
 
 // Localiza o ID do usuário associado ao e-mail informado.
