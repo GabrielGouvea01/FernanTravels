@@ -94,7 +94,8 @@ CREATE DATABASE fernantravels OWNER fernantravels;
 ```
 
 ```powershell
-psql -h localhost -p 5432 -U fernantravels -d fernantravels -f "/database/fernantravels_backup.sql"
+cd database
+psql -h localhost -U fernantravels -d fernantravels -f fernantravels_backup.sql
 ```
 
 Se usar os comandos SQL acima, execute `CREATE DATABASE` fora de um bloco de transação. A restauração deve ser feita em um banco vazio; ela recria as tabelas, sequências, restrições e os registros incluídos no dump.
