@@ -10,7 +10,7 @@
 <body>
     <!-- Inclui o cabeçalho compartilhado com a navegação do site. -->
     <?php 
-    require_once 'includes/header.php';
+    require_once './includes/header.php';
     ?>
     <!-- Apresenta informações institucionais e os serviços da agência. -->
     <div>
