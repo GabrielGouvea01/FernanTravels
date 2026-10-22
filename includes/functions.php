@@ -41,10 +41,15 @@ function exibir_cotacoes($cotacoes, $exibir_id = false)
     // Mostra os dados de cada cotação.
     foreach ($cotacoes as $cotacao) {
         echo '<article><hr>';
+        // Verifica se a flag $exibir_id está ativa antes de mostrar o ID da cotação
         if ($exibir_id) {
+            // Exibe o ID contra ataques XSS usando a função escapar_html()
             echo '<strong>ID:</strong> ' . escapar_html($cotacao['id']) . '<br>';
         }
+        // Percorre o mapa de campos ($chave_no_array => $texto_do_rotulo)
         foreach ($campos as $campo => $rotulo) {
+            // Imprime o rótulo do campo em negrito e o seu respectivo valor
+            // O operador '??' evita erros de índice ausente (undefined index) caso o campo seja nulo
             echo '<strong>' . escapar_html($rotulo) . ':</strong> '
                 . escapar_html($cotacao[$campo] ?? '') . '<br>';
         }

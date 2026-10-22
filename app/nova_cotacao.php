@@ -20,35 +20,35 @@
         <form action="" method="post">
 
             <label for="nome">Nome:</label>
-            <input type="text" name="nome" id="nome" required><br>
+            <input type="text" name="nome" id="nome" placeholder="Digite seu nome completo" required><br>
 
             <label for="telefone">Telefone:</label>
-            <input type="tel" name="telefone" id="telefone" required><br>
+            <input type="tel" name="telefone" id="telefone" placeholder="Digite seu telefone com DDD" required><br>
 
             <label for="email">Email para contato:</label>
-            <input type="email" name="email" id="email" required><br><hr>
+            <input type="email" name="email" id="email" placeholder="Digite seu e-mail para contato" required><br><hr>
 
             <label for="origem">Origem: </label>
-            <input type="text" name="origem" id="origem" required>
+            <input type="text" name="origem" id="origem" placeholder="Digite a cidade ou aeroporto de origem" required>
             <br>
             <label for="destino">Destino: </label>
-            <input type="text" name="destino" id="destino" required>
+            <input type="text" name="destino" id="destino" placeholder="Digite a cidade ou aeroporto de destino" required>
             <br>
             <br>
             <label for="ida">Data de ida:</label>
-            <input type="date" name="ida" id="ida" min="<?= date('Y-m-d') ?>" required>
+            <input type="date" name="ida" id="ida" min="<?= date('Y-m-d') ?>" title="Selecione a data de ida" required>
             <br>
             <label for="volta">Data de volta</label>
-            <input type="date" name="volta" id="volta" min="<?= date('Y-m-d') ?>" required> <br> <br>
+            <input type="date" name="volta" id="volta" min="<?= date('Y-m-d') ?>" title="Selecione a data de volta" required> <br> <br>
 
             <label for="adultos">Quantos adultos:</label>
-            <input type="number" name="adultos" id="adultos" min="1" required><br>
+            <input type="number" name="adultos" id="adultos" min="1" placeholder="Informe a quantidade de adultos" required><br>
 
             <label for="criancas">Quantas crianças (menores de 12 anos):</label>
-            <input type="number" name="criancas" id="criancas" min="0" required><br>
+            <input type="number" name="criancas" id="criancas" min="0" placeholder="Informe a quantidade de crianças" required><br>
 
             <label for="bagagens">Quantas bagagens:</label>
-            <input type="number" name="bagagens" id="bagagens" min="0" required><br><hr>
+            <input type="number" name="bagagens" id="bagagens" min="0" placeholder="Informe a quantidade de bagagens" required><br><hr>
             
             <label for="escolhaH_sim">Vai alugar hotel?</label>
             <br>

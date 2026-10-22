@@ -16,6 +16,41 @@ Aplicação web da agência de viagens **FernanTravels**, desenvolvida em PHP e 
 
 > As páginas administrativas requerem login. Antes de disponibilizar o sistema publicamente, confirme que cada página administrativa também exige o perfil de administrador no servidor, e não apenas no menu.
 
+## Requisitos funcionais e não funcionais
+
+As tabelas a seguir documentam os requisitos funcionais e de qualidade identificados para o sistema, destacando limitações relevantes da implementação atual.
+
+### Requisitos funcionais
+
+| ID do requisito | Título | Descrição |
+| --- | --- | --- |
+| RF01 | Apresentar a agência | O sistema deve apresentar informações institucionais da FernanTravels, seus serviços, história e fundadores na página inicial. |
+| RF02 | Cadastrar usuário | O sistema deve permitir o cadastro de uma conta com nome, e-mail e senha, validando o preenchimento e o formato do e-mail. Nome e e-mail devem ser únicos conforme as restrições atuais do banco de dados. |
+| RF03 | Autenticar usuário | O sistema deve permitir a entrada com e-mail e senha, validar as credenciais e informar quando forem inválidas. |
+| RF04 | Encerrar sessão | O sistema deve permitir que o usuário saia da conta, encerrando a sessão e retornando à página inicial. |
+| RF05 | Controlar acesso por sessão | O sistema deve exigir uma sessão autenticada para as páginas que solicitam login e redirecionar visitantes não autenticados à tela de login. |
+| RF06 | Solicitar cotação | O usuário autenticado deve poder registrar uma cotação com dados de contato, origem, destino, datas de ida e volta, quantidade de adultos, crianças e bagagens, e opções de hotel e carro. A cotação deve ser associada à conta autenticada. |
+| RF07 | Consultar histórico próprio | O usuário autenticado deve poder consultar suas cotações, apresentadas da mais recente para a mais antiga. |
+| RF08 | Atualizar cotação própria | O usuário autenticado deve poder informar o ID de uma cotação e alterar seus dados. A gravação da alteração deve ocorrer somente se a cotação pertencer à conta autenticada. |
+| RF09 | Listar cotações | A página de listagem deve apresentar as cotações cadastradas, incluindo seus IDs, em ordem decrescente. |
+| RF10 | Listar clientes | A página de clientes deve apresentar as contas cadastradas e a quantidade de cotações associadas a cada uma. |
+| RF11 | Consultar cliente | Deve ser possível localizar um cliente pelo ID e apresentar seu nome, e-mail e quantidade de cotações. |
+| RF12 | Consultar histórico de cliente | Deve ser possível localizar as cotações associadas a um cliente pelo ID, em ordem decrescente. |
+| RF13 | Excluir cotação | Deve ser possível informar o ID de uma cotação para removê-la, com retorno indicando se ela foi encontrada e excluída. |
+| RF14 | Disponibilizar navegação administrativa | O menu deve exibir os links de administração somente quando a sessão indicar o perfil `admin`. **Limitação atual:** as páginas administrativas verificam login, mas não aplicam de forma consistente a verificação do perfil no servidor; portanto, a restrição do menu não impede acesso direto às rotas por outros usuários autenticados. |
+
+### Requisitos não funcionais
+
+| ID do requisito | Título | Descrição |
+| --- | --- | --- |
+| RNF01 | Ambiente de execução | A aplicação deve funcionar com PHP e a extensão PDO para PostgreSQL (`pdo_pgsql`), conectada a um banco PostgreSQL. O README recomenda PostgreSQL 18, versão usada para gerar o dump incluído. |
+| RNF02 | Persistência e integridade | Os dados de usuários e cotações devem ser persistidos no PostgreSQL. O banco deve manter identificadores primários, e-mail e nome únicos para usuários, além da referência entre a cotação e a conta associada. |
+| RNF03 | Proteção de senhas | As senhas não devem ser armazenadas em texto simples: o cadastro deve usar `password_hash()` e a autenticação deve verificar a senha com `password_verify()`. |
+| RNF04 | Tratamento seguro de conteúdo | Os valores dinâmicos apresentados em HTML devem ser escapados para reduzir a interpretação de conteúdo como marcação. As consultas preparadas devem ser usadas para operações parametrizadas; a implementação deve ser revisada para aplicar esse padrão a todas as consultas que recebem dados externos. |
+| RNF05 | Usabilidade e validação | A interface deve estar em português do Brasil, identificar os campos com rótulos e fornecer instruções nos campos de formulário. Deve usar tipos e validações HTML adequados, como e-mail, campos obrigatórios e quantidades mínimas, para orientar o preenchimento. |
+| RNF06 | Compatibilidade e adaptação de tela | As páginas devem usar HTML e CSS compatíveis com navegadores web atuais e incluir configuração de viewport e estilos flexíveis para diferentes larguras de tela. |
+| RNF07 | Organização e manutenção | A conexão com o banco, as funções reutilizáveis e os componentes compartilhados de cabeçalho e rodapé devem permanecer centralizados nos arquivos comuns do projeto, evitando duplicação nas páginas. |
+
 ## Tecnologias
 
 - PHP
@@ -52,14 +87,14 @@ O dump contém a estrutura e os registros existentes no momento em que foi gerad
 2. Crie um banco chamado `fernantravels` e escolha `fernantravels` como proprietário.
 3. Abra o PowerShell e execute o comando abaixo, ajustando o caminho caso tenha salvado o arquivo em outra pasta:
 
-```powershell
-psql -h localhost -p 5432 -U fernantravels -d fernantravels -f "/database/fernantravels_backup.sql"
-```
-
 ```sql
 -- execute em uma sessão psql conectada a um banco administrativo
 CREATE USER fernantravels WITH PASSWORD 'sua_senha';
 CREATE DATABASE fernantravels OWNER fernantravels;
+```
+
+```powershell
+psql -h localhost -p 5432 -U fernantravels -d fernantravels -f "/database/fernantravels_backup.sql"
 ```
 
 Se usar os comandos SQL acima, execute `CREATE DATABASE` fora de um bloco de transação. A restauração deve ser feita em um banco vazio; ela recria as tabelas, sequências, restrições e os registros incluídos no dump.
@@ -71,7 +106,7 @@ Se usar os comandos SQL acima, execute `CREATE DATABASE` fora de um bloco de tra
 Edite `database/connect.php` para usar o endereço, o nome do banco, o usuário e a senha definidos no seu PostgreSQL. Não publique credenciais reais no GitHub.
 
 ```php
-$host = 'localhost';
+$host = 'IP_SErVIDOR';
 $dbname = 'NOME_DB';
 $user = 'SEU_USUARIO_POSTGRES';
 $pass = 'SUA_SENHA';
@@ -339,7 +374,7 @@ flowchart TD
 
 ### 5.2 Diagrama de casos de uso
 
-O diagrama resume as ações disponíveis para clientes e administradores. A autorização das telas administrativas é verificada no servidor.
+O diagrama resume as ações disponíveis para clientes e administradores. Na implementação atual, as rotas administrativas exigem login, mas a verificação do perfil `admin` deve ser aplicada no servidor para impedir o acesso direto por outros usuários autenticados.
 
 ```mermaid
 flowchart LR

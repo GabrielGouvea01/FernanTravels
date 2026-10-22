@@ -19,7 +19,7 @@
         <h1>Ver dados de um cliente </h1>
         <form action="" method="post">
             <label for="id">Digite o ID que você deseja encontrar:</label>
-            <input type="number" name="id" id="id" min="1" required>
+            <input type="number" name="id" id="id" min="1" placeholder="Digite o ID do cliente" required>
 
             <input type="submit" value="Encotrar cliente">
         </form>

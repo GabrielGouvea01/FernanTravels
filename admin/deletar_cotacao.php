@@ -19,7 +19,7 @@
         <h1>Deletar Cotação</h1>
         <form action="" method="post">
             <label for="id">Insira o ID da cotação que deseja deletar:</label>
-            <input type="number" name="id" id="id" min="1" required>
+            <input type="number" name="id" id="id" min="1" placeholder="Digite o ID da cotação" required>
 
             <input type="submit" value="Exluir cotação">
         </form>

@@ -54,7 +54,7 @@
         <!-- Pesquisa o ID da cotação para carregar seus dados. -->
         <form action="" method="get">
             <label for="id_cotacao">ID da cotação:</label>
-            <input type="number" name="id_cotacao" value="<?= $cota['id'] ?? '' ?>" required>
+            <input type="number" name="id_cotacao" value="<?= $cota['id'] ?? '' ?>" placeholder="Digite o ID da cotação" required>
             <button type="submit">Buscar</button>
         </form>
 
@@ -67,34 +67,34 @@
             <input type="hidden" name="id_cotacao" value="<?= $cota['id'] ?? '' ?>">
 
             <label for="nome">Nome:</label>
-            <input type="text" name="nome" value="<?= $cota['nome'] ?? '' ?>" required><br>
+            <input type="text" name="nome" value="<?= $cota['nome'] ?? '' ?>" placeholder="Digite o nome completo do cliente" required><br>
 
             <label for="telefone">Telefone:</label>
-            <input type="tel" name="telefone" value="<?= $cota['telefone'] ?? '' ?>" required><br>
+            <input type="tel" name="telefone" value="<?= $cota['telefone'] ?? '' ?>" placeholder="Digite o telefone com DDD" required><br>
 
             <label for="email">Email para contato:</label>
-            <input type="email" name="email" value="<?= $cota['email'] ?? '' ?>" required><br><hr>
+            <input type="email" name="email" value="<?= $cota['email'] ?? '' ?>" placeholder="Digite o e-mail para contato" required><br><hr>
 
             <label for="origem">Origem:</label>
-            <input type="text" name="origem" value="<?= $cota['origem'] ?? '' ?>" required><br>
+            <input type="text" name="origem" value="<?= $cota['origem'] ?? '' ?>" placeholder="Digite a cidade ou aeroporto de origem" required><br>
 
             <label for="destino">Destino:</label>
-            <input type="text" name="destino" value="<?= $cota['destino'] ?? '' ?>" required><br><br>
+            <input type="text" name="destino" value="<?= $cota['destino'] ?? '' ?>" placeholder="Digite a cidade ou aeroporto de destino" required><br><br>
 
             <label for="ida">Data de ida:</label>
-            <input type="date" name="ida" min="<?= date('Y-m-d') ?>" value="<?= $cota['ida'] ?? '' ?>" required><br>
+            <input type="date" name="ida" min="<?= date('Y-m-d') ?>" value="<?= $cota['ida'] ?? '' ?>" title="Selecione a data de ida" required><br>
 
             <label for="volta">Data de volta:</label>
-            <input type="date" name="volta" min="<?= date('Y-m-d') ?>" value="<?= $cota['volta'] ?? '' ?>" required><br><br>
+            <input type="date" name="volta" min="<?= date('Y-m-d') ?>" value="<?= $cota['volta'] ?? '' ?>" title="Selecione a data de volta" required><br><br>
 
             <label for="adultos">Quantos adultos:</label>
-            <input type="number" name="adultos" min="1" value="<?= $cota['adultos'] ?? '1' ?>" required><br>
+            <input type="number" name="adultos" min="1" value="<?= $cota['adultos'] ?? '1' ?>" placeholder="Informe a quantidade de adultos" required><br>
 
             <label for="criancas">Quantas crianças (menores de 12 anos):</label>
-            <input type="number" name="criancas" min="0" value="<?= $cota['criancas'] ?? '0' ?>" required><br>
+            <input type="number" name="criancas" min="0" value="<?= $cota['criancas'] ?? '0' ?>" placeholder="Informe a quantidade de crianças menores que 12 anos" required><br>
 
             <label for="bagagens">Quantas bagagens:</label>
-            <input type="number" name="bagagens" min="0" value="<?= $cota['bagagens'] ?? '0' ?>" required><br><hr>
+            <input type="number" name="bagagens" min="0" value="<?= $cota['bagagens'] ?? '0' ?>" placeholder="Informe a quantidade de bagagens" required><br><hr>
 
             <!-- Escolhe se a cotação inclui hotel. -->
             <label>Vai alugar hotel?</label><br>

@@ -19,7 +19,7 @@
         <h1>historico de um cliente </h1>
         <form action="" method="post">
             <label for="id">Escreva o ID do Cliente que você deseja ver as cotações:</label>
-            <input type="number" name="id" id="id" min="1" required>
+            <input type="number" name="id" id="id" min="1" placeholder="Digite o ID do cliente" required>
 
             <input type="submit" value="Encontrar cotação">
         </form>
